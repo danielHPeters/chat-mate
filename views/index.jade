@@ -1,15 +1,15 @@
 extends layout
 
 block content
-  script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
   script(src='https://cdn.socket.io/socket.io-1.4.5.js')
   script(src='javascripts/chat.js')
-    
-  h1= title
-  p Welcome to #{title}
-  ul
-    for message in messages
-      li= message
-  form(class='chat',action='')
-    input(type='text', id='newMessage', name='newMessage')
-    input(type='submit', value='Send')
+  .container  
+    h1= title
+    ul.list-group#messages
+    form(class='chat',action='')
+      .form-group.form-group-lg
+        input(type='text', id='newMessage', name='newMessage', autocomplete='off').form-control
+        br
+        input(type='submit', value='Send').form-control.btn.btn-primary
+    h4= 'Online Users'
+    ul.list-group.list-inline#userList
