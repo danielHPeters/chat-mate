@@ -3,7 +3,15 @@
  * socket.io module
  */
 
+/**
+ * File Handler
+ */
 const fs = require('fs');
+
+/**
+ * Html sanitizer
+ */
+const validator = require('validator');
 
 /**
  * 
@@ -12,43 +20,87 @@ const fs = require('fs');
  */
 module.exports = function (io) {
 
+    // event list
+    const sockEvents = {
+        newuser: 'little_newbie',
+        hello: 'hello message',
+        conn: 'user connect',
+        chat: 'chat message',
+        online: 'online users',
+        disconn: 'user disconnect',
+        image: 'image submit'
+    };
+
     let users = [];
 
     io.on('connection', function (socket) {
 
-        socket.on('little_newbie', function (username) {
-            socket.emit('hello message', { content: 'Welcome to ChatMate ' + username});
-            socket.username = username;
-            socket.broadcast.emit('user connect', { content: socket.username + ' came online' });
-            console.log(socket.username);
-            users.push({ name: socket.username, id: socket.id });
-        });
+        socket.on(sockEvents.newuser, function (username) {
 
-        console.log('A user connected');
+            if (username !== '' && username !== null) {
+
+                socket.emit(
+                    sockEvents.hello,
+                    {
+                        content: 'Welcome to ChatMate <strong>' +
+                        username + '</strong>'
+                    }
+                );
+
+                socket.username = username;
+
+                socket.broadcast.emit(
+                    sockEvents.conn,
+                    { content: '<strong>' + socket.username + '</strong> came online.' }
+                );
+
+                users.push({ name: socket.username, id: socket.id });
+
+                io.emit(sockEvents.online, users);
+
+            } else {
+                socket.disconnect();
+            }
+
+        });
 
 
         // Listener for chat event.
-        socket.on('chat message', function (msg) {
+        socket.on(sockEvents.chat, function (msg) {
             if (msg !== '') {
-                io.emit('chat message', { user: socket.username, content: msg });
-                console.log('message: ' + msg);
+
+                if (msg.length > 100) {
+                    msg = msg.substring(0, 120);
+                }
+
+                msg = validator.escape(msg);
+
+                io.emit(sockEvents.chat, { user: socket.username, content: msg });
             }
         });
 
+        // Listener for image submit
+        socket.on(sockEvents.image, function (image) {
+            io.emit(sockEvents.image, image);
+        });
+
+        // Disconnect listener
         socket.on('disconnect', function () {
-            socket.broadcast.emit('user disconnect', { content: socket.username + ' left the chat' });
-            console.log(socket.id + ' disconnected');
+
+            socket.broadcast.emit(
+                sockEvents.disconn,
+                { content: '<strong>' + socket.username + '</strong> left the chat.' }
+            );
 
             for (let i = 0; i < users.length; i++) {
                 if (users[i].id === socket.id) {
                     users.splice(i, 1);
                 }
             }
-            io.emit('online users', users);
-        });
 
-        io.emit('online users', users);
-        console.log(users);
+            io.emit(sockEvents.online, users);
+
+        });
 
     });
 };

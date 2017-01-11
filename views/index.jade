@@ -8,8 +8,9 @@ block content
     ul.list-group#messages
     form(class='chat',action='')
       .form-group.form-group-lg
-        input(type='text', id='newMessage', name='newMessage', autocomplete='off').form-control
+        input(type='text', id='newMessage' , maxlength='120', name='newMessage', autocomplete='off').form-control
         br
         input(type='submit', value='Send').form-control.btn.btn-primary
     h4= 'Online Users'
     ul.list-group.list-inline#userList
+    button#emptyChat.btn.btn-danger= 'Empty Chat'
