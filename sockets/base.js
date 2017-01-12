@@ -4,11 +4,6 @@
  */
 
 /**
- * File Handler
- */
-const fs = require('fs');
-
-/**
  * Html sanitizer
  */
 const validator = require('validator');
@@ -65,7 +60,10 @@ function newUser(io, socket) {
 
             socket.broadcast.emit(
                 sockEvents.conn,
-                { content: '<strong>' + socket.username + '</strong> came online.' }
+                { 
+                    content: '<strong>' + socket.username +
+                    '</strong> came online.' 
+                }
             );
 
             users.push({ name: socket.username, id: socket.id });
@@ -121,8 +119,6 @@ module.exports = function (io) {
 
     io.on('connection', function (socket) {
 
-
-
         chatMessages(io, socket);
 
         newUser(io, socket);
@@ -130,7 +126,6 @@ module.exports = function (io) {
         imageSubmit(io, socket);
 
         userDisconnect(io, socket);
-
 
     });
 };
