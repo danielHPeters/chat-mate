@@ -11,6 +11,10 @@ block content
         input(type='text', id='newMessage' , maxlength='120', name='newMessage', autocomplete='off').form-control
         br
         input(type='submit', value='Send').form-control.btn.btn-primary
+    form(class='imageSubmit', action='')
+      .form-group.form-group-lg
+        label.btn.btn-default.btn-file= 'Select Image'
+          input(type='file', id='newImage', name='image').hidden
     h4= 'Online Users'
     ul.list-group.list-inline#userList
     button#emptyChat.btn.btn-danger= 'Empty Chat'

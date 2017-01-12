@@ -1,5 +1,8 @@
-var express = require('express');
-var router = express.Router();
+/* jshint node:true, esversion:6 */
+'use strict';
+
+const express = require('express');
+const router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {

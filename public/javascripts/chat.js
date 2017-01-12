@@ -6,7 +6,7 @@
  */
 
 
-function getUsername(){
+function getUsername() {
     let username = '';
     while (username === '' || username === null || username === undefined) {
         username = prompt('What\'s your username?');
@@ -36,7 +36,7 @@ $(document).ready(function () {
     socket.on('chat message', function (msg) {
         $('#messages').append(
             $('<li class="list-group-item">').html('<strong>' +
-            msg.user + '</strong>: ' + msg.content)
+                msg.user + '</strong>: ' + msg.content)
         );
     });
 
@@ -59,6 +59,17 @@ $(document).ready(function () {
         );
     });
 
+    socket.on('image submit', function (data) {
+        if (data.img) {
+
+            $('#messages').append($('<li class="list-group-item">').html(
+                '<strong>' + data.user + '</strong>: ' + '<img class="img-responsive" src="' +
+                data.img + '"/>'
+            ));
+
+        }
+    });
+
     // Waiting for user to submit message
     $('.chat').submit(function () {
         socket.emit('chat message', $('#newMessage').val());
@@ -68,7 +79,20 @@ $(document).ready(function () {
         return false;
     });
 
-    $('#emptyChat').click(function(){
+    // Waiting for user to submit message
+    $('.imageSubmit').on('change', function (e) {
+        const file = e.originalEvent.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (evt) {
+            socket.emit('image submit', { img: evt.target.result });
+        };
+
+        reader.readAsDataURL(file);
+
+    });
+
+    $('#emptyChat').click(function () {
         $('#messages').empty();
     });
 
