@@ -6,24 +6,41 @@
  */
 
 
-function getUsername() {
+/**
+ * 
+ * @param {type} callback
+ * @returns {undefined}
+ */
+function getUsername(callback) {
+
     let username = '';
-    while (username === '' || username === null || username === undefined) {
+
+    do  {
         username = prompt('What\'s your username?');
-    }
-    return username;
+    } while (username === '' || username === null || username === undefined)
+
+    callback(username);
 }
 
+/**
+ * 
+ * @type type
+ */
 $(document).ready(function () {
     'use strict';
     const socket = io();
     const events = ['hello message', 'user disconnect', 'user connect'];
     let username = '';
 
-    username = getUsername();
+    
 
     socket.on('connect', function () {
-        socket.emit('little_newbie', username);
+
+        getUsername(function (name) {
+            username = name;
+            socket.emit('little_newbie', username);
+        });
+
     });
 
 
@@ -35,15 +52,15 @@ $(document).ready(function () {
 
     socket.on('chat message', function (msg) {
         $('#messages').append(
-            $('<li class="list-group-item">').html('<strong>' +
+                $('<li class="list-group-item">').html('<strong>' +
                 msg.user + '</strong>: ' + msg.content)
-        );
+                );
     });
 
     socket.on('disconnect', function () {
         $('#messages').append($('<li class="list-group-item">').html(
-            '<strong>You have been disconnected. Trying to reconnect.</strong>')
-        );
+                '<strong>You have been disconnected. Trying to reconnect.</strong>')
+                );
     });
 
     socket.on('online users', function (users) {
@@ -55,20 +72,22 @@ $(document).ready(function () {
 
     socket.on('connect_failed', function () {
         $('#messages').append(
-            $('<li class="list-group-item">').html('<strong>Connection Failed</strong>')
-        );
+                $('<li class="list-group-item">').html('<strong>Connection Failed</strong>')
+                );
     });
 
     socket.on('image submit', function (data) {
         if (data.img) {
 
             $('#messages').append($('<li class="list-group-item">').html(
-                '<strong>' + data.user + '</strong>: ' + '<img class="img-responsive" src="' +
-                data.img + '"/>'
-            ));
+                    '<strong>' + data.user + '</strong>: ' + '<img class="img-responsive" src="' +
+                    data.img + '"/>'
+                    ));
 
         }
     });
+
+
 
     // Waiting for user to submit message
     $('.chat').submit(function () {
@@ -85,7 +104,7 @@ $(document).ready(function () {
         const reader = new FileReader();
 
         reader.onload = function (evt) {
-            socket.emit('image submit', { img: evt.target.result });
+            socket.emit('image submit', {img: evt.target.result});
         };
 
         reader.readAsDataURL(file);

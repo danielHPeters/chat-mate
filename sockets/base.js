@@ -23,6 +23,9 @@ const sockEvents = {
 
 /**
  * 
+ * @param {type} io
+ * @param {type} socket
+ * @returns {undefined}
  */
 function chatMessages(io, socket) {
     // Listener for chat event.
@@ -42,6 +45,9 @@ function chatMessages(io, socket) {
 
 /**
  * 
+ * @param {type} io
+ * @param {type} socket
+ * @returns {undefined}
  */
 function newUser(io, socket) {
     socket.on(sockEvents.newuser, function (username) {
@@ -79,6 +85,9 @@ function newUser(io, socket) {
 
 /**
  * 
+ * @param {type} io
+ * @param {type} socket
+ * @returns {undefined}
  */
 function imageSubmit(io, socket) {
     // Listener for image submit
