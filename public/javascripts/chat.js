@@ -5,17 +5,17 @@
  *
  */
 
+'use strict';
 
 /**
- * 
- * @param {type} callback
- * @returns {undefined}
+ *
+ * @param callback
  */
 function getUsername(callback) {
 
     let username = '';
 
-    do  {
+    do {
         username = prompt('What\'s your username?');
     } while (username === '' || username === null || username === undefined)
 
@@ -23,18 +23,23 @@ function getUsername(callback) {
 }
 
 /**
- * 
- * @type type
+ *
+ * @param data
  */
-$(document).ready(function () {
-    'use strict';
+function appendToMessages(data) {
+    $('#messages').append($('<li class="list-group-item">').html(data));
+}
+
+/**
+ *
+ */
+function handleChat() {
+
     const socket = io();
     const events = ['hello message', 'user disconnect', 'user connect'];
     let username = '';
 
-    
-
-    socket.on('connect', function () {
+    socket.on('connect', () => {
 
         getUsername(function (name) {
             username = name;
@@ -43,67 +48,62 @@ $(document).ready(function () {
 
     });
 
-
-    events.forEach(function (event) {
-        socket.on(event, function (msg) {
+    events.forEach(event => {
+        socket.on(event, msg => {
             $('#messages').append($('<li class="list-group-item">').html(msg.content));
         });
     });
 
-    socket.on('chat message', function (msg) {
-        $('#messages').append(
-                $('<li class="list-group-item">').html('<strong>' +
-                msg.user + '</strong>: ' + msg.content)
-                );
+    socket.on('chat message', msg => {
+        appendToMessages('<strong>' + msg.user + '</strong>: ' + msg.content);
     });
 
-    socket.on('disconnect', function () {
-        $('#messages').append($('<li class="list-group-item">').html(
-                '<strong>You have been disconnected. Trying to reconnect.</strong>')
-                );
+    socket.on('disconnect', () => {
+        appendToMessages('<strong>You have been disconnected. Trying to reconnect.</strong>');
     });
 
-    socket.on('online users', function (users) {
+    socket.on('online users', users => {
+
         $('#userList').empty();
-        users.forEach(function (user) {
+
+        users.forEach(user => {
             $('#userList').append($('<li class="list-group-item">').text(user.name));
         });
     });
 
-    socket.on('connect_failed', function () {
-        $('#messages').append(
-                $('<li class="list-group-item">').html('<strong>Connection Failed</strong>')
+    socket.on('connect_failed', () => {
+        appendToMessages('<strong>Connection Failed</strong>');
+    });
+
+    socket.on('image submit', data => {
+
+            if (data.img) {
+
+                appendToMessages(
+                    '<strong>' + data.user + '</strong>: ' + '' +
+                    '<img class="img-responsive" src="' + data.img + '"/>'
                 );
-    });
 
-    socket.on('image submit', function (data) {
-        if (data.img) {
-
-            $('#messages').append($('<li class="list-group-item">').html(
-                    '<strong>' + data.user + '</strong>: ' + '<img class="img-responsive" src="' +
-                    data.img + '"/>'
-                    ));
-
+            }
         }
-    });
-
+    )
+    ;
 
 
     // Waiting for user to submit message
-    $('.chat').submit(function () {
+    $('.chat').submit(e => {
         socket.emit('chat message', $('#newMessage').val());
         $('#newMessage').val('');
 
-        // Prevent form from default submit
-        return false;
+        e.preventDefault();
     });
 
     // Waiting for user to submit message
-    $('.imageSubmit').on('change', function (e) {
+    $('.imageSubmit').on('change', e => {
         const file = e.originalEvent.target.files[0];
         const reader = new FileReader();
 
-        reader.onload = function (evt) {
+        reader.onLoad = evt => {
             socket.emit('image submit', {img: evt.target.result});
         };
 
@@ -111,8 +111,16 @@ $(document).ready(function () {
 
     });
 
-    $('#emptyChat').click(function () {
+}
+
+/**
+ *
+ */
+$(document).ready(() => {
+
+    handleChat();
+
+    $('#emptyChat').click(() => {
         $('#messages').empty();
     });
-
 });

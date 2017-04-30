@@ -1,22 +1,22 @@
 extends layout
 
 block content
-  script(src='https://cdn.socket.io/socket.io-1.4.5.js')
-  script(src='javascripts/chat.js')
-  meta(charset='utf-8')
-  meta(name='viewport', content='width=device-width, initial-scale=1')
-  .container  
-    h1= title
-    ul.list-group#messages
-    form(class='chat',action='')
-      .form-group.form-group-lg
-        input(type='text', id='newMessage' , maxlength='120', name='newMessage', autocomplete='off').form-control
-        br
-        input(type='submit', value='Send').form-control.btn.btn-primary
-    form(class='imageSubmit', action='')
-      .form-group.form-group-lg
-        label.btn.btn-default.btn-file= 'Select Image'
-          input(type='file', id='newImage', name='image').hidden
-    h4= 'Online Users'
-    ul.list-group.list-inline#userList
-    button#emptyChat.btn.btn-danger= 'Empty Chat'
+    script(src='https://cdn.socket.io/socket.io-1.4.5.js')
+    script(src='javascripts/chat.js')
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    .container
+        h1= title
+        ul.list-group#messages
+        form(class='chat',action='')
+            .form-group.form-group-lg
+                input(type='text', id='newMessage' , maxlength='120', name='newMessage', autocomplete='off').form-control
+                br
+                input(type='submit', value='Send').form-control.btn.btn-primary
+        form(class='imageSubmit', action='')
+            .form-group.form-group-lg
+                label(for='newImage').btn.btn-default.btn-file= 'Select Image'
+                input(type='file' name='image')#newImage.hidden
+        h4= 'Online Users'
+        ul.list-group.list-inline#userList
+        button#emptyChat.btn.btn-danger= 'Empty Chat'

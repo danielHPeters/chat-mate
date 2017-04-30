@@ -12,20 +12,19 @@ let users = [];
 
 // event list
 const sockEvents = {
-    newuser: 'little_newbie',
+    newUser: 'little_newbie',
     hello: 'hello message',
     conn: 'user connect',
     chat: 'chat message',
     online: 'online users',
-    disconn: 'user disconnect',
+    disconnect: 'user disconnect',
     image: 'image submit'
 };
 
 /**
- * 
- * @param {type} io
- * @param {type} socket
- * @returns {undefined}
+ *
+ * @param io
+ * @param socket
  */
 function chatMessages(io, socket) {
     // Listener for chat event.
@@ -38,19 +37,18 @@ function chatMessages(io, socket) {
 
             msg = validator.escape(msg);
 
-            io.emit(sockEvents.chat, { user: socket.username, content: msg });
+            io.emit(sockEvents.chat, {user: socket.username, content: msg});
         }
     });
 }
 
 /**
- * 
- * @param {type} io
- * @param {type} socket
- * @returns {undefined}
+ *
+ * @param io
+ * @param socket
  */
 function newUser(io, socket) {
-    socket.on(sockEvents.newuser, function (username) {
+    socket.on(sockEvents.newUser, function (username) {
 
         if (username !== '' && username !== null) {
 
@@ -66,13 +64,13 @@ function newUser(io, socket) {
 
             socket.broadcast.emit(
                 sockEvents.conn,
-                { 
+                {
                     content: '<strong>' + socket.username +
-                    '</strong> came online.' 
+                    '</strong> came online.'
                 }
             );
 
-            users.push({ name: socket.username, id: socket.id });
+            users.push({name: socket.username, id: socket.id});
 
             io.emit(sockEvents.online, users);
 
@@ -84,24 +82,28 @@ function newUser(io, socket) {
 }
 
 /**
- * 
- * @param {type} io
- * @param {type} socket
- * @returns {undefined}
+ *
+ * @param io
+ * @param socket
  */
 function imageSubmit(io, socket) {
     // Listener for image submit
     socket.on(sockEvents.image, function (data) {
-        io.emit(sockEvents.image, { user: socket.username, img: data.img });
+        io.emit(sockEvents.image, {user: socket.username, img: data.img});
     });
 }
 
+/**
+ *
+ * @param io
+ * @param socket
+ */
 function userDisconnect(io, socket) {
     // Disconnect listener
     socket.on('disconnect', function () {
 
         socket.broadcast.emit(
-            sockEvents.disconn,
+            sockEvents.disconnect,
             {
                 content: '<strong>' + socket.username +
                 '</strong> left the chat.'
@@ -120,9 +122,8 @@ function userDisconnect(io, socket) {
 }
 
 /**
- * 
- * @param {type} io
- * @returns {undefined}
+ *
+ * @param io
  */
 module.exports = function (io) {
 
