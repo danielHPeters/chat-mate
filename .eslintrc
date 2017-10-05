@@ -1,0 +1,18 @@
+{
+  "extends": "standard",
+  "env": {
+    "browser": true,
+    "es6": true,
+    "jquery": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "globals": {
+    "io": true
+  }
+}

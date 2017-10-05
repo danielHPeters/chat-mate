@@ -1,17 +1,11 @@
-/* jshint node:true, esversion:6 */
+'use strict'
 
-/**
- * Routes
- */
-
-'use strict';
-
-const express = require('express');
-const router = express.Router();
+const express = require('express')
+const router = express.Router()
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
-    res.render('index', {title: 'ChatMate'});
-});
+router.get('/', function (req, res) {
+  res.render('index', {title: 'ChatMate'})
+})
 
-module.exports = router;
+module.exports = router
