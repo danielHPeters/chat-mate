@@ -13,11 +13,6 @@ const sockEvents = {
   image: 'imageSubmit'
 }
 
-/**
- *
- * @param io
- * @param socket
- */
 function chatMessages (io, socket) {
   // Listener for chat event.
   socket.on(sockEvents.chat, function (msg) {
@@ -33,11 +28,6 @@ function chatMessages (io, socket) {
   })
 }
 
-/**
- *
- * @param io
- * @param socket
- */
 function newUser (io, socket) {
   socket.on(sockEvents.newUser, function (username) {
     if (username !== '' && username !== null) {
@@ -68,11 +58,6 @@ function newUser (io, socket) {
   })
 }
 
-/**
- *
- * @param iost
- * @param socket
- */
 function imageSubmit (io, socket) {
   // Listener for image submit
   socket.on('image submit', function (data) {
@@ -81,11 +66,6 @@ function imageSubmit (io, socket) {
   })
 }
 
-/**
- *
- * @param io
- * @param socket
- */
 function userDisconnect (io, socket) {
   // Disconnect listener
   socket.on('disconnect', function () {
@@ -107,10 +87,6 @@ function userDisconnect (io, socket) {
   })
 }
 
-/**
- *
- * @param io
- */
 module.exports = function (io) {
   io.on('connection', function (socket) {
     chatMessages(io, socket)
