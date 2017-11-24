@@ -29,7 +29,7 @@ function chatMessages (io, socket) {
 }
 
 function newUser (io, socket) {
-  socket.on(sockEvents.newUser, function (username) {
+  socket.on(sockEvents.newUser, username => {
     if (username !== '' && username !== null) {
       socket.emit(
         sockEvents.hello,
@@ -60,15 +60,14 @@ function newUser (io, socket) {
 
 function imageSubmit (io, socket) {
   // Listener for image submit
-  socket.on('image submit', function (data) {
-    console.log('Image')
+  socket.on('image submit', data => {
     io.emit('user image', {user: socket.username, img: data.img})
   })
 }
 
 function userDisconnect (io, socket) {
   // Disconnect listener
-  socket.on('disconnect', function () {
+  socket.on('disconnect', () => {
     socket.broadcast.emit(
       sockEvents.disconnect,
       {
@@ -87,8 +86,8 @@ function userDisconnect (io, socket) {
   })
 }
 
-module.exports = function (io) {
-  io.on('connection', function (socket) {
+module.exports = io => {
+  io.on('connection', socket => {
     chatMessages(io, socket)
     newUser(io, socket)
     imageSubmit(io, socket)

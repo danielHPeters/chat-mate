@@ -10,8 +10,14 @@ function getUsername (callback) {
   callback(username)
 }
 
+function scrollDown (element) {
+  element.animate({scrollTop: element.prop('scrollHeight')}, 0)
+}
+
 function appendToMessages (data) {
-  $('#messages').append($('<li class="collection-item">').html(data))
+  let messages = $('#messages')
+  messages.append($('<li class="collection-item">').html(data))
+  scrollDown(messages)
 }
 
 function handleChat () {
