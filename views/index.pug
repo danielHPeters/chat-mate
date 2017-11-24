@@ -1,0 +1,34 @@
+extends layout
+
+block content
+  meta(charset='utf-8')
+  meta(name='viewport', content='width=device-width, initial-scale=1')
+  .container
+    h1= title
+    .row
+      h4 Online Users
+      #userList
+    .row
+      h4 Chat
+      ul.collection#messages
+    .row
+      form.chat.col.s6(action='')
+        .row
+          .input-field.col.s8
+            i.material-icons.prefix mode_edit
+            input#newMessage.validate(type='text', maxlength='120', name='newMessage', autocomplete='off')
+            label(for='newMessage') Message
+          .col.s4
+            button.btn-floating.btn-large.waves-effect.waves-light(type='submit')
+              i.material-icons.right send
+      .col.s3
+        button#emptyChat.btn-floating.btn-large.waves-effect.waves-light.red
+          i.material-icons.right delete_forever
+    .row
+      form#imageSubmit.col.s12(action='')
+        .row
+          .col.s12
+            input.dropify(type='file' data-max-file-size='2M')
+block scripts
+  script(src='/socket.io/socket.io.js')
+  script(src='js/chat.js')

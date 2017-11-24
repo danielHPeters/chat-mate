@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="JavaScriptLibraryMappings">
-    <file url="file://$PROJECT_DIR$" libraries="{Node.js Core, socket.io}" />
+    <file url="file://$PROJECT_DIR$" libraries="{dropify, jquery-2.1.1, materialize, mdb, socket.io}" />
     <file url="PROJECT" libraries="{bootstrap, jquery}" />
+    <includedPredefinedLibrary name="Node.js Core" />
   </component>
 </project>
