@@ -11,18 +11,6 @@
           <option name="FORCE_QUOTE_STYlE" value="true" />
           <option name="SPACES_WITHIN_IMPORTS" value="true" />
         </JSCodeStyleSettings>
-        <PHPCodeStyleSettings>
-          <option name="ALIGN_PHPDOC_PARAM_NAMES" value="true" />
-          <option name="ALIGN_PHPDOC_COMMENTS" value="true" />
-          <option name="PHPDOC_BLANK_LINE_BEFORE_TAGS" value="true" />
-          <option name="PHPDOC_BLANK_LINES_AROUND_PARAMETERS" value="true" />
-          <option name="PHPDOC_WRAP_LONG_LINES" value="true" />
-          <option name="LOWER_CASE_BOOLEAN_CONST" value="true" />
-          <option name="LOWER_CASE_NULL_CONST" value="true" />
-          <option name="ELSE_IF_STYLE" value="SEPARATE" />
-          <option name="KEEP_RPAREN_AND_LBRACE_ON_ONE_LINE" value="true" />
-          <option name="IF_RPAREN_ON_NEXT_LINE" value="true" />
-        </PHPCodeStyleSettings>
         <codeStyleSettings language="CSS">
           <indentOptions>
             <option name="INDENT_SIZE" value="2" />

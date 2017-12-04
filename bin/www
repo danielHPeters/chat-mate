@@ -22,7 +22,7 @@ const server = http.createServer(app)
  * socket.io connection
  */
 const io = require('socket.io').listen(server)
-require('./../sockets/base')(io)
+require('../chat/server/app')(io)
 
 /**
  * Listen on provided port, on all network interfaces.
