@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict'
+
 /**
  * Module dependencies.
  */
@@ -33,8 +35,8 @@ server.on('listening', onListening)
 
 /**
  * Normalize a port into a number, string, or false.
- * @param {type} val
- * @returns {wwwL#1.normalizePort.port|Boolean}
+ * @param {*} val
+ * @returns {number|boolean}
  */
 function normalizePort (val) {
   const port = parseInt(val, 10)
@@ -54,7 +56,7 @@ function normalizePort (val) {
 
 /**
  * Event listener for HTTP server "error" event.
- * @param {type} error
+ * @param {*} error
  * @returns {undefined}
  */
 function onError (error) {
@@ -68,9 +70,11 @@ function onError (error) {
     case 'EACCES':
       console.error(bind + ' requires elevated privileges')
       process.exit(1)
+      break
     case 'EADDRINUSE':
       console.error(bind + ' is already in use')
       process.exit(1)
+      break
     default:
       throw error
   }

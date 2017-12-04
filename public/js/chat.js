@@ -1,9 +1,5 @@
 'use strict'
 
-/**
- *
- * @param callback
- */
 function getUsername (callback) {
   let username = ''
 
@@ -14,17 +10,16 @@ function getUsername (callback) {
   callback(username)
 }
 
-/**
- *
- * @param data
- */
-function appendToMessages (data) {
-  $('#messages').append($('<li class="list-group-item">').html(data))
+function scrollDown (element) {
+  element.animate({scrollTop: element.prop('scrollHeight')}, 0)
 }
 
-/**
- *
- */
+function appendToMessages (data) {
+  let messages = $('#messages')
+  messages.append($('<li class="collection-item">').html(data))
+  scrollDown(messages)
+}
+
 function handleChat () {
   const socket = io()
   const events = ['hello message', 'user disconnect', 'user connect']
@@ -39,7 +34,7 @@ function handleChat () {
 
   events.forEach(event => {
     socket.on(event, msg => {
-      $('#messages').append($('<li class="list-group-item">').html(msg.content))
+      $('#messages').append($('<li class="collection-item">').html(msg.content))
     })
   })
 
@@ -55,7 +50,7 @@ function handleChat () {
     $('#userList').empty()
 
     users.forEach(user => {
-      $('#userList').append($('<li class="list-group-item">').text(user.name))
+      $('#userList').append($('<div class="chip">').text(user.name))
     })
   })
 
@@ -68,7 +63,7 @@ function handleChat () {
       if (data.img) {
         appendToMessages(
           '<strong>' + data.user + '</strong>: ' + '' +
-          '<img class="img-responsive" src="' + data.img + '"/>'
+          '<img class="responsive-img" src="' + data.img + '"/>'
         )
       }
     }
@@ -85,20 +80,17 @@ function handleChat () {
 
   // Waiting for user to submit message
   $('#imageSubmit').bind('change', e => {
+    e.preventDefault()
     const file = e.originalEvent.target.files[0]
     const reader = new FileReader()
-
-    reader.onLoad = function (evt) {
-      socket.emit('image submit', {img: evt.target.result})
-    }
+    reader.addEventListener('load', function (evt) {
+      socket.emit('image submit', {img: this.result})
+    })
 
     reader.readAsDataURL(file)
   })
 }
 
-/**
- *
- */
 $(document).ready(() => {
   handleChat()
 
