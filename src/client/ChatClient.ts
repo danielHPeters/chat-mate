@@ -1,3 +1,5 @@
+import { SocketEvents } from '../server/chat/ChatServer'
+
 /**
  * Chat client class.
  *
@@ -8,6 +10,7 @@ export default class ChatClient {
   private element: HTMLDivElement
 
   /**
+   * Constructor.
    *
    * @param {string} id
    */
@@ -15,6 +18,11 @@ export default class ChatClient {
     this.element = document.getElementById(id) as HTMLDivElement
   }
 
+  /**
+   * Get username using a prompt. Waits until user submits a valid username.
+   *
+   * @param callback
+   */
   getUsername (callback): void {
     let username = ''
 
@@ -25,45 +33,79 @@ export default class ChatClient {
     callback(username)
   }
 
+  /**
+   * Scroll to the bottom of the chat.
+   */
   scrollDown (): void {
-    this.element.animate({scrollTop: this.element.prop('scrollHeight')}, 0)
+    this.element.scrollTop = this.element.scrollHeight
   }
 
-  appendToMessages (text: string): void {
+  /**
+   * Append an item to the messages collection.
+   *
+   * @param {HTMLElement[]} elements
+   */
+  appendMessage (elements: HTMLElement[]): void {
     let li = document.createElement('li')
     li.classList.add('collection-item')
-    li.appendChild(document.createTextNode(text))
+    elements.forEach(element => li.appendChild(element))
     this.element.appendChild(li)
     this.scrollDown()
   }
 
-  handleChat (): void {
+  /**
+   *
+   */
+  init (): void {
     const socket = io()
-    const events = ['hello message', 'user disconnect', 'user connect']
     let username = ''
 
-    socket.on('connect', () => {
+    socket.on(SocketEvents.CLIENT_CONNECT, () => {
       this.getUsername(name => {
         username = name
-        socket.emit('little_newbie', username)
+        socket.emit(SocketEvents.NEW_USER, username)
       })
     })
 
-    events.forEach(event => {
-      socket.on(event, msg => {
-        this.appendToMessages(msg.content)
-      })
+    socket.on(SocketEvents.WELCOME, msg => {
+      const strong = document.createElement('strong')
+      const span = document.createElement('span')
+      strong.appendChild(document.createTextNode(msg.user))
+      span.appendChild(document.createTextNode(msg.content))
+      this.appendMessage([span, strong])
     })
 
-    socket.on('chat message', msg => {
-      this.appendToMessages('<strong>' + msg.user + '</strong>: ' + msg.content)
+    socket.on(SocketEvents.USER_CONNECT, msg => {
+      const strong = document.createElement('strong')
+      const span = document.createElement('span')
+      strong.appendChild(document.createTextNode(msg.user))
+      span.appendChild(document.createTextNode(msg.content))
+      this.appendMessage([strong, span])
     })
 
-    socket.on('disconnect', () => {
-      this.appendToMessages('<strong>You have been disconnected. Trying to reconnect.</strong>')
+    socket.on(SocketEvents.USER_DISCONNECT, msg => {
+      const strong = document.createElement('strong')
+      const span = document.createElement('span')
+      strong.appendChild(document.createTextNode(msg.user))
+      span.appendChild(document.createTextNode(msg.content))
+      this.appendMessage([strong, span])
     })
 
-    socket.on('online users', users => {
+    socket.on(SocketEvents.MESSAGE, msg => {
+      const strong = document.createElement('strong')
+      strong.appendChild(document.createTextNode(msg.user))
+      const span = document.createElement('span')
+      span.appendChild(document.createTextNode(': ' + msg.content))
+      this.appendMessage([strong, span])
+    })
+
+    socket.on(SocketEvents.DISCONNECT, () => {
+      const strong = document.createElement('strong')
+      strong.appendChild(document.createTextNode('You have been disconnected. Trying to reconnect.'))
+      this.appendMessage([strong])
+    })
+
+    socket.on(SocketEvents.CONNECTED_USERS, users => {
       const userList = document.getElementById('userList')
       userList.innerHTML = ''
 
@@ -75,25 +117,31 @@ export default class ChatClient {
       })
     })
 
-    socket.on('connect_failed', () => {
-      this.appendToMessages('<strong>Connection Failed</strong>')
+    socket.on(SocketEvents.CONNECT_FAILED, () => {
+      const strong = document.createElement('strong')
+      strong.appendChild(document.createTextNode('Connection Failed.'))
+      this.appendMessage([strong])
     })
 
-    socket.on('user image',
+    socket.on(SocketEvents.IMAGE,
       data => {
         if (data.img) {
-          this.appendToMessages(
-            '<strong>' + data.user + '</strong>: ' + '' +
-            '<img class="responsive-img" src="' + data.img + '"/>'
-          )
+          const strong = document.createElement('strong')
+          const span = document.createElement('span')
+          const img = document.createElement('img')
+          img.classList.add('responsive-img')
+          img.src = data.img
+          strong.appendChild(document.createTextNode(data.user))
+          span.appendChild(document.createTextNode(': '))
+          this.appendMessage([strong, span, img])
         }
       }
     )
 
-    const form = document.querySelector('.chat') as HTMLFormElement
+    const form = document.getElementById('chat') as HTMLFormElement
     form.addEventListener('submit', event => {
-      const message = (document.getElementById('ewMessage')as HTMLInputElement).value
-      socket.emit('chat message', message)
+      const message = (document.getElementById('newMessage')as HTMLInputElement).value
+      socket.emit(SocketEvents.MESSAGE, message)
       form.reset()
       event.preventDefault()
     })
@@ -101,10 +149,10 @@ export default class ChatClient {
     // Waiting for user to submit message
     document.getElementById('imageSubmit').addEventListener('change', e => {
       e.preventDefault()
-      const file = e.originalEvent.target.files[0]
+      const file = (document.getElementById('image') as HTMLInputElement).files[0]
       const reader = new FileReader()
-      reader.addEventListener('load', function (evt) {
-        socket.emit('image submit', {img: this.result})
+      reader.addEventListener('load', evt => {
+        socket.emit(SocketEvents.IMAGE, { img: reader.result })
       })
 
       reader.readAsDataURL(file)

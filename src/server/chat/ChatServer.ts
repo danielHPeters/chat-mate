@@ -2,7 +2,9 @@ import * as validator from 'validator'
 
 export enum SocketEvents {
   CONNECTION = 'connection',
+  CLIENT_CONNECT = 'connect',
   DISCONNECT = 'disconnect',
+  CONNECT_FAILED = 'connect_failed',
   NEW_USER = 'new-user',
   WELCOME = 'welcome',
   USER_CONNECT = 'user-connect',
@@ -50,13 +52,13 @@ export default class ChatServer {
    * @param {SocketIO.Socket} socket
    */
   addUser (socket: SocketIO.Socket): void {
-    socket.on(SocketEvents.NEW_USER, username => {
-      if (username !== '' && username !== null) {
-        socket.emit(SocketEvents.WELCOME, {content: 'Welcome to ChatMate <strong>' + username + '</strong>'})
+    socket.on(SocketEvents.NEW_USER, user => {
+      if (user !== '' && user !== null) {
+        socket.emit(SocketEvents.WELCOME, { user, content: 'Welcome to ChatMate ' })
 
-        socket['username'] = username
-        socket.broadcast.emit(SocketEvents.USER_CONNECT, {content: '<strong>' + socket['username'] + '</strong> came online.'})
-        this.users.push({name: socket['username'], id: socket.id})
+        socket['username'] = user
+        socket.broadcast.emit(SocketEvents.USER_CONNECT, { user: socket['username'], content: ' came online.' })
+        this.users.push({ name: socket['username'], id: socket.id })
         this.io.emit(SocketEvents.CONNECTED_USERS, this.users)
       } else {
         socket.disconnect()
@@ -76,7 +78,7 @@ export default class ChatServer {
           msg = msg.substring(0, 120)
         }
         msg = validator.escape(msg)
-        this.io.emit(SocketEvents.MESSAGE, {user: socket['username'], content: msg})
+        this.io.emit(SocketEvents.MESSAGE, { user: socket['username'], content: msg })
       }
     })
   }
@@ -87,7 +89,7 @@ export default class ChatServer {
    * @param {SocketIO.Socket} socket
    */
   sendImages (socket: SocketIO.Socket): void {
-    socket.on(SocketEvents.IMAGE, data => this.io.emit(SocketEvents.IMAGE, {user: socket['username'], img: data.img}))
+    socket.on(SocketEvents.IMAGE, data => this.io.emit(SocketEvents.IMAGE, { user: socket['username'], img: data.img }))
   }
 
   /**
@@ -97,7 +99,7 @@ export default class ChatServer {
    */
   removeUser (socket: SocketIO.Socket): void {
     socket.on(SocketEvents.DISCONNECT, () => {
-      socket.broadcast.emit(SocketEvents.USER_DISCONNECT, {content: '<strong>' + socket['username'] + '</strong> left the chat.'})
+      socket.broadcast.emit(SocketEvents.USER_DISCONNECT, { user: socket['username'], content: ' left the chat.' })
 
       for (let i = 0; i < this.users.length; i++) {
         if (this.users[i].id === socket.id) {

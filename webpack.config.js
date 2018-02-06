@@ -2,7 +2,7 @@ const path = require('path')
 
 module.exports = {
   entry: {
-    studio: './src/studio/app.ts'
+    chat: './src/client/app.ts'
   },
   devtool: 'source-map',
   output: {
