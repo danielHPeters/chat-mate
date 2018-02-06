@@ -138,7 +138,7 @@ export default class ChatClient {
       }
     )
 
-    const form = document.getElementById('chat') as HTMLFormElement
+    const form = document.getElementById('chatForm') as HTMLFormElement
     form.addEventListener('submit', event => {
       const message = (document.getElementById('newMessage')as HTMLInputElement).value
       socket.emit(SocketEvents.MESSAGE, message)

@@ -787,7 +787,7 @@ class ChatClient {
                 this.appendMessage([strong, span, img]);
             }
         });
-        const form = document.getElementById('chat');
+        const form = document.getElementById('chatForm');
         form.addEventListener('submit', event => {
             const message = document.getElementById('newMessage').value;
             socket.emit(ChatServer_1.SocketEvents.MESSAGE, message);
