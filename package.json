@@ -20,13 +20,22 @@
     "validator": "^9.4.0"
   },
   "devDependencies": {
+    "@types/socket.io": "^1.4.31",
+    "@types/socket.io-client": "^1.4.32",
+    "@types/validator": "^6.3.0",
     "eslint": "^4.16.0",
     "eslint-config-standard": "^11.0.0-beta.0",
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-node": "^5.2.1",
     "eslint-plugin-promise": "^3.6.0",
     "eslint-plugin-standard": "^3.0.1",
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.2.4",
     "stylelint": "^8.4.0",
-    "stylelint-config-standard": "^18.0.0"
+    "stylelint-config-standard": "^18.0.0",
+    "ts-lint": "^4.5.1",
+    "ts-loader": "^3.4.0",
+    "tslint-config-standard": "^7.0.0",
+    "typescript": "^2.7.1"
   }
 }
