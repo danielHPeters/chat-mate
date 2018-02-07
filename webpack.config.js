@@ -2,7 +2,8 @@ const path = require('path')
 
 module.exports = {
   entry: {
-    chat: './src/client/app.ts'
+    chat: './src/client/app.ts',
+    multimedia: './src/client/multimedia.ts'
   },
   devtool: 'source-map',
   output: {

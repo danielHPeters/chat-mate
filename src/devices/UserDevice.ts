@@ -17,10 +17,10 @@ export default class UserDevice {
   /**
    * Initializing method.
    */
-  public init (): void {
+  public init (id: string): void {
     navigator.mediaDevices.getUserMedia(this.constraints)
       .then((mediaStream) => {
-        const video = document.querySelector('video')
+        const video = document.getElementById(id) as HTMLVideoElement
         this._stream = mediaStream
         video.srcObject = mediaStream
         video.onloadedmetadata = (ev => video.play())

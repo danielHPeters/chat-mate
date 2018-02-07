@@ -4,10 +4,10 @@ class UserDevice {
     constructor(constraints) {
         this.constraints = constraints;
     }
-    init() {
+    init(id) {
         navigator.mediaDevices.getUserMedia(this.constraints)
             .then((mediaStream) => {
-            const video = document.querySelector('video');
+            const video = document.getElementById(id);
             this._stream = mediaStream;
             video.srcObject = mediaStream;
             video.onloadedmetadata = (ev => video.play());
