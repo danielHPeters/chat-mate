@@ -1,5 +1,5 @@
-import { SocketEvents } from '../server/chat/ChatServer'
 import IChatUi from './IChatUi'
+import { SocketEvents } from '../enum/SocketEvents'
 
 /**
  * Chat client class.

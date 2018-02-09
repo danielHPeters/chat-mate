@@ -120,3 +120,5 @@ fabric.properties
 #Linux
 .directory
 .idea/php.xml
+
+dist/
