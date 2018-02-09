@@ -25,7 +25,7 @@ export default class ChatServer {
   /**
    * Initialize all server listeners.
    */
-  init (): void {
+  public init (): void {
     this.io.on(SocketEvents.CONNECTION, socket => {
       this.sendMessages(socket)
       this.addUser(socket)
@@ -39,7 +39,7 @@ export default class ChatServer {
    *
    * @param {SocketIO.Socket} socket
    */
-  addUser (socket: SocketIO.Socket): void {
+  private addUser (socket: SocketIO.Socket): void {
     socket.on(SocketEvents.NEW_USER, user => {
       if (user !== '' && user !== null) {
         socket.emit(SocketEvents.WELCOME, { user, content: 'Welcome to ChatMate ' + user })
@@ -59,7 +59,7 @@ export default class ChatServer {
    *
    * @param {SocketIO.Socket} socket
    */
-  sendMessages (socket: SocketIO.Socket): void {
+  private sendMessages (socket: SocketIO.Socket): void {
     socket.on(SocketEvents.MESSAGE, msg => {
       msg = validator.escape(msg)
       if (msg !== '') {
@@ -76,7 +76,7 @@ export default class ChatServer {
    *
    * @param {SocketIO.Socket} socket
    */
-  sendImages (socket: SocketIO.Socket): void {
+  private sendImages (socket: SocketIO.Socket): void {
     socket.on(SocketEvents.IMAGE, data => this.io.emit(SocketEvents.IMAGE, {
       user: socket['username'],
       content: data.img
@@ -88,7 +88,7 @@ export default class ChatServer {
    *
    * @param {SocketIO.Socket} socket
    */
-  removeUser (socket: SocketIO.Socket): void {
+  private removeUser (socket: SocketIO.Socket): void {
     socket.on(SocketEvents.DISCONNECT, () => {
       if (socket['username']) {
         socket.broadcast.emit(SocketEvents.USER_DISCONNECT, { user: socket['username'], content: ' left the chat.' })

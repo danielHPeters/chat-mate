@@ -23,7 +23,7 @@ export default class ChatUi implements IChatUi {
   /**
    * Get username using a prompt. Waits until user submits a valid username.
    *
-   * @param {(name: string) => void} callback
+   * @param {(name: string) => void} callback Callback executed after user submits a valid name.
    */
   public namePrompt (callback: (name: string) => void): void {
     let username = ''
@@ -36,8 +36,9 @@ export default class ChatUi implements IChatUi {
   }
 
   /**
+   * Add a message with username in bold and message in lowercase.
    *
-   * @param {IChatMessage} msg
+   * @param {IChatMessage} msg Chat message
    */
   public appendSimpleMessage (msg: IChatMessage): void {
     const strong = document.createElement('strong')
@@ -48,8 +49,9 @@ export default class ChatUi implements IChatUi {
   }
 
   /**
+   * Add a bold message to the chat area.
    *
-   * @param {IChatMessage} msg
+   * @param {IChatMessage} msg Chat message
    */
   public appendBoldText (msg: IChatMessage): void {
     const strong = document.createElement('strong')
@@ -59,7 +61,7 @@ export default class ChatUi implements IChatUi {
 
   /**
    *
-   * @param {IChatMessage} msg
+   * @param {IChatMessage} msg Chat message
    */
   public appendImage (msg: IChatMessage): void {
     const strong = document.createElement('strong')
@@ -73,8 +75,9 @@ export default class ChatUi implements IChatUi {
   }
 
   /**
+   * Refresh logged on user list.
    *
-   * @param {IUser[]} users
+   * @param {IUser[]} users List of online users
    */
   public refreshUserList (users: IUser[]): void {
     const userList = document.getElementById('userList')
@@ -97,7 +100,7 @@ export default class ChatUi implements IChatUi {
   /**
    * Append an item to the messages collection.
    *
-   * @param {HTMLElement[]} elements
+   * @param {HTMLElement[]} elements html elements.
    */
   private appendMessage (elements: HTMLElement[]): void {
     let li = document.createElement('li')

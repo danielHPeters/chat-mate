@@ -34,7 +34,7 @@ export default class UserDevice {
   /**
    * Gets the media stream.
    *
-   * @returns {MediaStream}
+   * @returns {MediaStream} Media stream source
    */
   get stream (): MediaStream {
     return this._stream
