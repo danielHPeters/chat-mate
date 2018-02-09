@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const validator = require("validator");
+const User_1 = require("../../model/User");
 var SocketEvents;
 (function (SocketEvents) {
     SocketEvents["CONNECTION"] = "connection";
@@ -31,40 +32,42 @@ class ChatServer {
     addUser(socket) {
         socket.on(SocketEvents.NEW_USER, user => {
             if (user !== '' && user !== null) {
-                socket.emit(SocketEvents.WELCOME, { user, content: 'Welcome to ChatMate ' });
+                socket.emit(SocketEvents.WELCOME, { user, content: 'Welcome to ChatMate ' + user });
                 socket['username'] = user;
-                socket.broadcast.emit(SocketEvents.USER_CONNECT, { user: socket['username'], content: ' came online.' });
-                this.users.push({ name: socket['username'], id: socket.id });
+                socket.broadcast.emit(SocketEvents.USER_CONNECT, { user, content: ' came online.' });
+                this.users.push(new User_1.default(socket.id, user));
                 this.io.emit(SocketEvents.CONNECTED_USERS, this.users);
             }
             else {
                 socket.disconnect();
             }
+            console.log(this.users);
         });
     }
     sendMessages(socket) {
         socket.on(SocketEvents.MESSAGE, msg => {
+            msg = validator.escape(msg);
             if (msg !== '') {
                 if (msg.length > 100) {
                     msg = msg.substring(0, 120);
                 }
-                msg = validator.escape(msg);
-                this.io.emit(SocketEvents.MESSAGE, { user: socket['username'], content: msg });
+                this.io.emit(SocketEvents.MESSAGE, { user: socket['username'], content: ': ' + msg });
             }
         });
     }
     sendImages(socket) {
-        socket.on(SocketEvents.IMAGE, data => this.io.emit(SocketEvents.IMAGE, { user: socket['username'], img: data.img }));
+        socket.on(SocketEvents.IMAGE, data => this.io.emit(SocketEvents.IMAGE, {
+            user: socket['username'],
+            content: data.img
+        }));
     }
     removeUser(socket) {
         socket.on(SocketEvents.DISCONNECT, () => {
-            socket.broadcast.emit(SocketEvents.USER_DISCONNECT, { user: socket['username'], content: ' left the chat.' });
-            for (let i = 0; i < this.users.length; i++) {
-                if (this.users[i].id === socket.id) {
-                    this.users.splice(i, 1);
-                }
+            if (socket['username']) {
+                socket.broadcast.emit(SocketEvents.USER_DISCONNECT, { user: socket['username'], content: ' left the chat.' });
+                this.users = this.users.filter(user => user.id !== socket.id);
+                this.io.emit(SocketEvents.CONNECTED_USERS, this.users);
             }
-            this.io.emit(SocketEvents.CONNECTED_USERS, this.users);
         });
     }
 }

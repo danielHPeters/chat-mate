@@ -1,143 +1,59 @@
 import { SocketEvents } from '../server/chat/ChatServer'
+import IChatUi from './IChatUi'
 
 /**
  * Chat client class.
  *
  * @author Daniel Peters
- * @version 1.0
+ * @version 1.1
  */
 export default class ChatClient {
-  private element: HTMLDivElement
+  private ui: IChatUi
 
   /**
    * Constructor.
    *
-   * @param {string} id
+   * @param {IChatUi} ui Chat user interface
    */
-  constructor (id: string) {
-    this.element = document.getElementById(id) as HTMLDivElement
+  constructor (ui: IChatUi) {
+    this.ui = ui
   }
 
   /**
-   * Get username using a prompt. Waits until user submits a valid username.
-   *
-   * @param callback
+   * Initialize all events.
    */
-  getUsername (callback): void {
-    let username = ''
-
-    do {
-      username = prompt('What\'s your username?')
-    } while (username === '' || username === null || username === undefined)
-
-    callback(username)
-  }
-
-  /**
-   * Scroll to the bottom of the chat.
-   */
-  scrollDown (): void {
-    this.element.scrollTop = this.element.scrollHeight
-  }
-
-  /**
-   * Append an item to the messages collection.
-   *
-   * @param {HTMLElement[]} elements
-   */
-  appendMessage (elements: HTMLElement[]): void {
-    let li = document.createElement('li')
-    li.classList.add('collection-item')
-    elements.forEach(element => li.appendChild(element))
-    this.element.appendChild(li)
-    this.scrollDown()
-  }
-
-  /**
-   *
-   */
-  init (): void {
+  public init (): void {
     const socket = io()
-    let username = ''
+    this.registerSocketEvents(socket)
+    this.registerFormEvents(socket)
+  }
 
-    socket.on(SocketEvents.CLIENT_CONNECT, () => {
-      this.getUsername(name => {
-        username = name
-        socket.emit(SocketEvents.NEW_USER, username)
-      })
-    })
+  /**
+   * Register all socket.io events.
+   *
+   * @param {SocketIOClient.Socket} socket Socket instance
+   */
+  private registerSocketEvents (socket: SocketIOClient.Socket): void {
+    const connectFailMsg = { content: 'Connection Failed.', user: '' }
+    const disconnectMsg = { content: 'You have been disconnected. Trying to reconnect.', user: '' }
 
-    socket.on(SocketEvents.WELCOME, msg => {
-      const strong = document.createElement('strong')
-      const span = document.createElement('span')
-      strong.appendChild(document.createTextNode(msg.user))
-      span.appendChild(document.createTextNode(msg.content))
-      this.appendMessage([span, strong])
-    })
+    socket.on(SocketEvents.CLIENT_CONNECT, () => this.ui.namePrompt(name => socket.emit(SocketEvents.NEW_USER, name)))
+    socket.on(SocketEvents.WELCOME, msg => this.ui.appendBoldText(msg))
+    socket.on(SocketEvents.DISCONNECT, () => this.ui.appendBoldText(disconnectMsg))
+    socket.on(SocketEvents.CONNECT_FAILED, () => this.ui.appendBoldText(connectFailMsg))
+    socket.on(SocketEvents.USER_CONNECT, msg => this.ui.appendSimpleMessage(msg))
+    socket.on(SocketEvents.USER_DISCONNECT, msg => this.ui.appendSimpleMessage(msg))
+    socket.on(SocketEvents.MESSAGE, msg => this.ui.appendSimpleMessage(msg))
+    socket.on(SocketEvents.IMAGE, msg => this.ui.appendImage(msg))
+    socket.on(SocketEvents.CONNECTED_USERS, users => this.ui.refreshUserList(users))
+  }
 
-    socket.on(SocketEvents.USER_CONNECT, msg => {
-      const strong = document.createElement('strong')
-      const span = document.createElement('span')
-      strong.appendChild(document.createTextNode(msg.user))
-      span.appendChild(document.createTextNode(msg.content))
-      this.appendMessage([strong, span])
-    })
-
-    socket.on(SocketEvents.USER_DISCONNECT, msg => {
-      const strong = document.createElement('strong')
-      const span = document.createElement('span')
-      strong.appendChild(document.createTextNode(msg.user))
-      span.appendChild(document.createTextNode(msg.content))
-      this.appendMessage([strong, span])
-    })
-
-    socket.on(SocketEvents.MESSAGE, msg => {
-      const strong = document.createElement('strong')
-      strong.appendChild(document.createTextNode(msg.user))
-      const span = document.createElement('span')
-      span.appendChild(document.createTextNode(': ' + msg.content))
-      this.appendMessage([strong, span])
-    })
-
-    socket.on(SocketEvents.DISCONNECT, () => {
-      const strong = document.createElement('strong')
-      strong.appendChild(document.createTextNode('You have been disconnected. Trying to reconnect.'))
-      this.appendMessage([strong])
-    })
-
-    socket.on(SocketEvents.CONNECTED_USERS, users => {
-      const userList = document.getElementById('userList')
-      userList.innerHTML = ''
-
-      users.forEach(user => {
-        const chip = document.createElement('div')
-        chip.classList.add('chip')
-        chip.appendChild(document.createTextNode(user.name))
-        userList.appendChild(chip)
-      })
-    })
-
-    socket.on(SocketEvents.CONNECT_FAILED, () => {
-      const strong = document.createElement('strong')
-      strong.appendChild(document.createTextNode('Connection Failed.'))
-      this.appendMessage([strong])
-    })
-
-    socket.on(SocketEvents.IMAGE,
-      data => {
-        if (data.img) {
-          const strong = document.createElement('strong')
-          const span = document.createElement('span')
-          const img = document.createElement('img')
-          img.classList.add('responsive-img')
-          img.src = data.img
-          strong.appendChild(document.createTextNode(data.user))
-          span.appendChild(document.createTextNode(': '))
-          this.appendMessage([strong, span, img])
-        }
-      }
-    )
-
+  /**
+   * Register all form submit and change events.
+   *
+   * @param {SocketIOClient.Socket} socket Socket instance
+   */
+  private registerFormEvents (socket: SocketIOClient.Socket): void {
     const form = document.getElementById('chatForm') as HTMLFormElement
     form.addEventListener('submit', event => {
       const message = (document.getElementById('newMessage')as HTMLInputElement).value
@@ -148,14 +64,11 @@ export default class ChatClient {
 
     // Waiting for user to submit message
     document.getElementById('imageSubmit').addEventListener('change', e => {
-      e.preventDefault()
       const file = (document.getElementById('image') as HTMLInputElement).files[0]
       const reader = new FileReader()
-      reader.addEventListener('load', evt => {
-        socket.emit(SocketEvents.IMAGE, { img: reader.result })
-      })
-
+      reader.addEventListener('load', evt => socket.emit(SocketEvents.IMAGE, { img: reader.result }))
       reader.readAsDataURL(file)
+      e.preventDefault()
     })
   }
 }

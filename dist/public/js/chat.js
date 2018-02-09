@@ -684,8 +684,10 @@ module.exports = exports['default'];
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const ChatClient_1 = __webpack_require__(17);
-$('.dropify').dropify();
-const client = new ChatClient_1.default('messages');
+const ChatUi_1 = __webpack_require__(75);
+$('.dropify')['dropify']();
+const ui = new ChatUi_1.default('messages');
+const client = new ChatClient_1.default(ui);
 client.init();
 
 
@@ -698,95 +700,28 @@ client.init();
 Object.defineProperty(exports, "__esModule", { value: true });
 const ChatServer_1 = __webpack_require__(18);
 class ChatClient {
-    constructor(id) {
-        this.element = document.getElementById(id);
-    }
-    getUsername(callback) {
-        let username = '';
-        do {
-            username = prompt('What\'s your username?');
-        } while (username === '' || username === null || username === undefined);
-        callback(username);
-    }
-    scrollDown() {
-        this.element.scrollTop = this.element.scrollHeight;
-    }
-    appendMessage(elements) {
-        let li = document.createElement('li');
-        li.classList.add('collection-item');
-        elements.forEach(element => li.appendChild(element));
-        this.element.appendChild(li);
-        this.scrollDown();
+    constructor(ui) {
+        this.ui = ui;
     }
     init() {
         const socket = io();
-        let username = '';
-        socket.on(ChatServer_1.SocketEvents.CLIENT_CONNECT, () => {
-            this.getUsername(name => {
-                username = name;
-                socket.emit(ChatServer_1.SocketEvents.NEW_USER, username);
-            });
-        });
-        socket.on(ChatServer_1.SocketEvents.WELCOME, msg => {
-            const strong = document.createElement('strong');
-            const span = document.createElement('span');
-            strong.appendChild(document.createTextNode(msg.user));
-            span.appendChild(document.createTextNode(msg.content));
-            this.appendMessage([span, strong]);
-        });
-        socket.on(ChatServer_1.SocketEvents.USER_CONNECT, msg => {
-            const strong = document.createElement('strong');
-            const span = document.createElement('span');
-            strong.appendChild(document.createTextNode(msg.user));
-            span.appendChild(document.createTextNode(msg.content));
-            this.appendMessage([strong, span]);
-        });
-        socket.on(ChatServer_1.SocketEvents.USER_DISCONNECT, msg => {
-            const strong = document.createElement('strong');
-            const span = document.createElement('span');
-            strong.appendChild(document.createTextNode(msg.user));
-            span.appendChild(document.createTextNode(msg.content));
-            this.appendMessage([strong, span]);
-        });
-        socket.on(ChatServer_1.SocketEvents.MESSAGE, msg => {
-            const strong = document.createElement('strong');
-            strong.appendChild(document.createTextNode(msg.user));
-            const span = document.createElement('span');
-            span.appendChild(document.createTextNode(': ' + msg.content));
-            this.appendMessage([strong, span]);
-        });
-        socket.on(ChatServer_1.SocketEvents.DISCONNECT, () => {
-            const strong = document.createElement('strong');
-            strong.appendChild(document.createTextNode('You have been disconnected. Trying to reconnect.'));
-            this.appendMessage([strong]);
-        });
-        socket.on(ChatServer_1.SocketEvents.CONNECTED_USERS, users => {
-            const userList = document.getElementById('userList');
-            userList.innerHTML = '';
-            users.forEach(user => {
-                const chip = document.createElement('div');
-                chip.classList.add('chip');
-                chip.appendChild(document.createTextNode(user.name));
-                userList.appendChild(chip);
-            });
-        });
-        socket.on(ChatServer_1.SocketEvents.CONNECT_FAILED, () => {
-            const strong = document.createElement('strong');
-            strong.appendChild(document.createTextNode('Connection Failed.'));
-            this.appendMessage([strong]);
-        });
-        socket.on(ChatServer_1.SocketEvents.IMAGE, data => {
-            if (data.img) {
-                const strong = document.createElement('strong');
-                const span = document.createElement('span');
-                const img = document.createElement('img');
-                img.classList.add('responsive-img');
-                img.src = data.img;
-                strong.appendChild(document.createTextNode(data.user));
-                span.appendChild(document.createTextNode(': '));
-                this.appendMessage([strong, span, img]);
-            }
-        });
+        this.registerSocketEvents(socket);
+        this.registerFormEvents(socket);
+    }
+    registerSocketEvents(socket) {
+        const connectFailMsg = { content: 'Connection Failed.', user: '' };
+        const disconnectMsg = { content: 'You have been disconnected. Trying to reconnect.', user: '' };
+        socket.on(ChatServer_1.SocketEvents.CLIENT_CONNECT, () => this.ui.namePrompt(name => socket.emit(ChatServer_1.SocketEvents.NEW_USER, name)));
+        socket.on(ChatServer_1.SocketEvents.WELCOME, msg => this.ui.appendBoldText(msg));
+        socket.on(ChatServer_1.SocketEvents.DISCONNECT, () => this.ui.appendBoldText(disconnectMsg));
+        socket.on(ChatServer_1.SocketEvents.CONNECT_FAILED, () => this.ui.appendBoldText(connectFailMsg));
+        socket.on(ChatServer_1.SocketEvents.USER_CONNECT, msg => this.ui.appendSimpleMessage(msg));
+        socket.on(ChatServer_1.SocketEvents.USER_DISCONNECT, msg => this.ui.appendSimpleMessage(msg));
+        socket.on(ChatServer_1.SocketEvents.MESSAGE, msg => this.ui.appendSimpleMessage(msg));
+        socket.on(ChatServer_1.SocketEvents.IMAGE, msg => this.ui.appendImage(msg));
+        socket.on(ChatServer_1.SocketEvents.CONNECTED_USERS, users => this.ui.refreshUserList(users));
+    }
+    registerFormEvents(socket) {
         const form = document.getElementById('chatForm');
         form.addEventListener('submit', event => {
             const message = document.getElementById('newMessage').value;
@@ -795,13 +730,11 @@ class ChatClient {
             event.preventDefault();
         });
         document.getElementById('imageSubmit').addEventListener('change', e => {
-            e.preventDefault();
             const file = document.getElementById('image').files[0];
             const reader = new FileReader();
-            reader.addEventListener('load', evt => {
-                socket.emit(ChatServer_1.SocketEvents.IMAGE, { img: reader.result });
-            });
+            reader.addEventListener('load', evt => socket.emit(ChatServer_1.SocketEvents.IMAGE, { img: reader.result }));
             reader.readAsDataURL(file);
+            e.preventDefault();
         });
     }
 }
@@ -816,6 +749,7 @@ exports.default = ChatClient;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const validator = __webpack_require__(19);
+const User_1 = __webpack_require__(74);
 var SocketEvents;
 (function (SocketEvents) {
     SocketEvents["CONNECTION"] = "connection";
@@ -846,10 +780,10 @@ class ChatServer {
     addUser(socket) {
         socket.on(SocketEvents.NEW_USER, user => {
             if (user !== '' && user !== null) {
-                socket.emit(SocketEvents.WELCOME, { user, content: 'Welcome to ChatMate ' });
+                socket.emit(SocketEvents.WELCOME, { user, content: 'Welcome to ChatMate ' + user });
                 socket['username'] = user;
-                socket.broadcast.emit(SocketEvents.USER_CONNECT, { user: socket['username'], content: ' came online.' });
-                this.users.push({ name: socket['username'], id: socket.id });
+                socket.broadcast.emit(SocketEvents.USER_CONNECT, { user, content: ' came online.' });
+                this.users.push(new User_1.default(socket.id, user));
                 this.io.emit(SocketEvents.CONNECTED_USERS, this.users);
             }
             else {
@@ -859,26 +793,25 @@ class ChatServer {
     }
     sendMessages(socket) {
         socket.on(SocketEvents.MESSAGE, msg => {
+            msg = validator.escape(msg);
             if (msg !== '') {
                 if (msg.length > 100) {
                     msg = msg.substring(0, 120);
                 }
-                msg = validator.escape(msg);
-                this.io.emit(SocketEvents.MESSAGE, { user: socket['username'], content: msg });
+                this.io.emit(SocketEvents.MESSAGE, { user: socket['username'], content: ': ' + msg });
             }
         });
     }
     sendImages(socket) {
-        socket.on(SocketEvents.IMAGE, data => this.io.emit(SocketEvents.IMAGE, { user: socket['username'], img: data.img }));
+        socket.on(SocketEvents.IMAGE, data => this.io.emit(SocketEvents.IMAGE, {
+            user: socket['username'],
+            content: data.img
+        }));
     }
     removeUser(socket) {
         socket.on(SocketEvents.DISCONNECT, () => {
             socket.broadcast.emit(SocketEvents.USER_DISCONNECT, { user: socket['username'], content: ' left the chat.' });
-            for (let i = 0; i < this.users.length; i++) {
-                if (this.users[i].id === socket.id) {
-                    this.users.splice(i, 1);
-                }
-            }
+            this.users = this.users.filter(user => user.id !== socket.id);
             this.io.emit(SocketEvents.CONNECTED_USERS, this.users);
         });
     }
@@ -3444,6 +3377,87 @@ function normalizeEmail(email, options) {
   return parts.join('@');
 }
 module.exports = exports['default'];
+
+/***/ }),
+/* 74 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+class User {
+    constructor(id, name, email = '') {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+    }
+}
+exports.default = User;
+
+
+/***/ }),
+/* 75 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+class ChatUi {
+    constructor(id) {
+        this.element = document.getElementById(id);
+    }
+    namePrompt(callback) {
+        let username = '';
+        do {
+            username = prompt('What\'s your username?');
+        } while (username === '' || username === null || username === undefined);
+        callback(username);
+    }
+    appendSimpleMessage(msg) {
+        const strong = document.createElement('strong');
+        const span = document.createElement('span');
+        strong.appendChild(document.createTextNode(msg.user));
+        span.appendChild(document.createTextNode(msg.content));
+        this.appendMessage([strong, span]);
+    }
+    appendBoldText(msg) {
+        const strong = document.createElement('strong');
+        strong.appendChild(document.createTextNode(msg.content));
+        this.appendMessage([strong]);
+    }
+    appendImage(msg) {
+        const strong = document.createElement('strong');
+        const span = document.createElement('span');
+        const img = document.createElement('img');
+        img.classList.add('responsive-img');
+        img.src = msg.content;
+        strong.appendChild(document.createTextNode(msg.user));
+        span.appendChild(document.createTextNode(': '));
+        this.appendMessage([strong, span, img]);
+    }
+    refreshUserList(users) {
+        const userList = document.getElementById('userList');
+        userList.innerHTML = '';
+        users.forEach(user => {
+            const chip = document.createElement('div');
+            chip.classList.add('chip');
+            chip.appendChild(document.createTextNode(user.name));
+            userList.appendChild(chip);
+        });
+    }
+    scrollDown() {
+        this.element.scrollTop = this.element.scrollHeight;
+    }
+    appendMessage(elements) {
+        let li = document.createElement('li');
+        li.classList.add('collection-item');
+        elements.forEach(element => li.appendChild(element));
+        this.element.appendChild(li);
+        this.scrollDown();
+    }
+}
+exports.default = ChatUi;
+
 
 /***/ })
 /******/ ]);

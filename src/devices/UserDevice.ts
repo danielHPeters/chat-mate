@@ -1,5 +1,8 @@
 /**
  * Accesses user media devices like microphone and streams the data.
+ *
+ * @author Daniel Peters
+ * @version 1.0
  */
 export default class UserDevice {
   private constraints

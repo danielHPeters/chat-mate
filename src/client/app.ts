@@ -1,6 +1,8 @@
 import ChatClient from './ChatClient'
+import ChatUi from './ChatUi'
 
-$('.dropify').dropify()
+$('.dropify')['dropify']()
 
-const client = new ChatClient('messages')
+const ui = new ChatUi('messages')
+const client = new ChatClient(ui)
 client.init()
