@@ -109,5 +109,4 @@ export default class ChatUi implements IChatUi {
     this.element.appendChild(li)
     this.scrollDown()
   }
-
 }
