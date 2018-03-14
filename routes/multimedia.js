@@ -4,8 +4,6 @@ const express = require('express')
 const router = express.Router()
 
 /* GET home page. */
-router.get('/', (req, res) => {
-  res.render('multimedia', {title: 'Video Chat'})
-})
+router.get('/', (req, res) => res.render('multimedia', {title: 'Video Chat'}))
 
 module.exports = router
