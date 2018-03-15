@@ -7,4 +7,4 @@ const router = express.Router()
 router.get('/', (req, res) => res.render('index', {title: 'ChatMate'}))
 
 module.exports = router
-s
+
