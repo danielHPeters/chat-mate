@@ -1,7 +1,7 @@
 'use strict'
 
+const { CheckerPlugin } = require('awesome-typescript-loader')
 const path = require('path')
-const UglifyWebpackPlugin = require('uglifyjs-webpack-plugin')
 
 module.exports = {
   entry: {
@@ -15,15 +15,15 @@ module.exports = {
   },
   resolve: {
     // Add '.ts' and '.tsx' as a resolvable extension.
-    extensions: ['.webpack.js', '.web.js', '.ts', '.tsx', '.js']
+    extensions: ['.ts', '.tsx', '.js', '.jsx']
   },
   module: {
     rules: [
-      // all files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'
-      { test: /\.tsx?$/, loader: 'ts-loader' }
+      // all files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'
+      { test: /\.tsx?$/, loader: 'awesome-typescript-loader' }
     ]
   },
-  plugins: [new UglifyWebpackPlugin({
-    sourceMap: true
-  })]
+  plugins: [
+    new CheckerPlugin()
+  ]
 }
