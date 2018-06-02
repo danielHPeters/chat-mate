@@ -1,5 +1,5 @@
 import * as validator from 'validator'
-import User from '../../model/User'
+import ChatUser from '../../model/ChatUser'
 import { SocketEvents } from '../../enum/SocketEvents'
 
 /**
@@ -15,7 +15,7 @@ export default class ChatServer {
   /**
    * Constructor.
    *
-   * @param {SocketIO.Server} io
+   * @param io
    */
   constructor (io: SocketIO.Server) {
     this.io = io
@@ -25,7 +25,7 @@ export default class ChatServer {
   /**
    * Initialize all server listeners.
    */
-  public init (): void {
+  init (): void {
     this.io.on(SocketEvents.CONNECTION, socket => {
       this.sendMessages(socket)
       this.addUser(socket)
@@ -37,7 +37,7 @@ export default class ChatServer {
   /**
    * Add a user on connection.
    *
-   * @param {SocketIO.Socket} socket
+   * @param socket
    */
   private addUser (socket: SocketIO.Socket): void {
     socket.on(SocketEvents.NEW_USER, user => {
@@ -45,7 +45,7 @@ export default class ChatServer {
         socket.emit(SocketEvents.WELCOME, { user, content: 'Welcome to ChatMate ' + user })
         socket['username'] = user
         socket.broadcast.emit(SocketEvents.USER_CONNECT, { user, content: ' came online.' })
-        this.users.push(new User(socket.id, user))
+        this.users.push(new ChatUser(socket.id, user))
         this.io.emit(SocketEvents.CONNECTED_USERS, this.users)
       } else {
         socket.disconnect()
@@ -57,7 +57,7 @@ export default class ChatServer {
   /**
    * Send messages to all clients.
    *
-   * @param {SocketIO.Socket} socket
+   * @param socket
    */
   private sendMessages (socket: SocketIO.Socket): void {
     socket.on(SocketEvents.MESSAGE, msg => {
@@ -74,7 +74,7 @@ export default class ChatServer {
   /**
    * Send submitted images to all clients.
    *
-   * @param {SocketIO.Socket} socket
+   * @param socket
    */
   private sendImages (socket: SocketIO.Socket): void {
     socket.on(SocketEvents.IMAGE, data => this.io.emit(SocketEvents.IMAGE, {
@@ -86,7 +86,7 @@ export default class ChatServer {
   /**
    * Remove a user on disconnect.
    *
-   * @param {SocketIO.Socket} socket
+   * @param socket
    */
   private removeUser (socket: SocketIO.Socket): void {
     socket.on(SocketEvents.DISCONNECT, () => {

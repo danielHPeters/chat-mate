@@ -6,7 +6,7 @@
  */
 export default class UserDevice {
   private constraints
-  private _stream: MediaStream
+  private stream: MediaStream
 
   /**
    * Constructor.
@@ -20,32 +20,14 @@ export default class UserDevice {
   /**
    * Initializing method.
    */
-  public init (id: string): void {
+  init (id: string): void {
     navigator.mediaDevices.getUserMedia(this.constraints)
       .then((mediaStream) => {
         const video = document.getElementById(id) as HTMLVideoElement
-        this._stream = mediaStream
+        this.stream = mediaStream
         video.srcObject = mediaStream
         video.onloadedmetadata = (ev => video.play())
       })
       .catch((err) => console.log(err.name + ': ' + err.message))
-  }
-
-  /**
-   * Gets the media stream.
-   *
-   * @returns {MediaStream} Media stream source
-   */
-  get stream (): MediaStream {
-    return this._stream
-  }
-
-  /**
-   * Sets the media stream.
-   *
-   * @param {MediaStream} stream Device media stream
-   */
-  set stream (stream: MediaStream) {
-    this._stream = stream
   }
 }

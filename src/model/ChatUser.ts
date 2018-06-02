@@ -1,4 +1,4 @@
-import IUser from '../client/IUser'
+import User from '../client/User'
 
 /**
  * User model class.
@@ -6,7 +6,7 @@ import IUser from '../client/IUser'
  * @author Daniel Peters
  * @version 1.0
  */
-export default class User implements IUser {
+export default class ChatUser implements User {
   id: string
   name: string
   email: string
@@ -14,11 +14,11 @@ export default class User implements IUser {
   /**
    * Constructor.
    *
-   * @param {string} id
-   * @param {string} name
-   * @param {string} email
+   * @param id
+   * @param name
+   * @param email
    */
-  constructor (id: string, name: string, email = '') {
+  constructor (id: string, name: string, email: string = '') {
     this.id = id
     this.name = name
     this.email = email

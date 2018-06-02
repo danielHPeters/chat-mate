@@ -1,4 +1,4 @@
-import IChatUi from './IChatUi'
+import Ui from './Ui'
 import { SocketEvents } from '../enum/SocketEvents'
 
 /**
@@ -8,21 +8,21 @@ import { SocketEvents } from '../enum/SocketEvents'
  * @version 1.1
  */
 export default class ChatClient {
-  private ui: IChatUi
+  private ui: Ui
 
   /**
    * Constructor.
    *
-   * @param {IChatUi} ui Chat user interface
+   * @param ui Chat user interface
    */
-  constructor (ui: IChatUi) {
+  constructor (ui: Ui) {
     this.ui = ui
   }
 
   /**
    * Initialize all events.
    */
-  public init (): void {
+  init (): void {
     const socket = io()
     this.registerSocketEvents(socket)
     this.registerFormEvents(socket)
@@ -31,7 +31,7 @@ export default class ChatClient {
   /**
    * Register all socket.io events.
    *
-   * @param {SocketIOClient.Socket} socket Socket instance
+   * @param socket Socket instance
    */
   private registerSocketEvents (socket: SocketIOClient.Socket): void {
     const connectFailMsg = { content: 'Connection Failed.', user: '' }
@@ -51,12 +51,12 @@ export default class ChatClient {
   /**
    * Register all form submit and change events.
    *
-   * @param {SocketIOClient.Socket} socket Socket instance
+   * @param socket Socket instance
    */
   private registerFormEvents (socket: SocketIOClient.Socket): void {
     const form = document.getElementById('chatForm') as HTMLFormElement
     form.addEventListener('submit', event => {
-      const message = (document.getElementById('newMessage')as HTMLInputElement).value
+      const message = (document.getElementById('newMessage') as HTMLInputElement).value
       socket.emit(SocketEvents.MESSAGE, message)
       form.reset()
       event.preventDefault()

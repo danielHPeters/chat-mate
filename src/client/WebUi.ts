@@ -1,6 +1,6 @@
-import IChatUi from './IChatUi'
-import IChatMessage from './IChatMessage'
-import IUser from './IUser'
+import Ui from './Ui'
+import ChatMessage from './ChatMessage'
+import User from './User'
 
 /**
  * Chat ui implementation class.
@@ -8,13 +8,13 @@ import IUser from './IUser'
  * @author Daniel Peters
  * @version 1.0
  */
-export default class ChatUi implements IChatUi {
+export default class WebUi implements Ui {
   private element: HTMLDivElement
 
   /**
    * Constructor.
    *
-   * @param {string} id ID of the chat display element
+   * @param id ID of the chat display element
    */
   constructor (id: string) {
     this.element = document.getElementById(id) as HTMLDivElement
@@ -23,9 +23,9 @@ export default class ChatUi implements IChatUi {
   /**
    * Get username using a prompt. Waits until user submits a valid username.
    *
-   * @param {(name: string) => void} callback Callback executed after user submits a valid name.
+   * @param callback Callback executed after user submits a valid name
    */
-  public namePrompt (callback: (name: string) => void): void {
+  namePrompt (callback: (name: string) => void): void {
     let username = ''
 
     do {
@@ -38,9 +38,9 @@ export default class ChatUi implements IChatUi {
   /**
    * Add a message with username in bold and message in lowercase.
    *
-   * @param {IChatMessage} msg Chat message
+   * @param msg Chat message
    */
-  public appendSimpleMessage (msg: IChatMessage): void {
+  appendSimpleMessage (msg: ChatMessage): void {
     const strong = document.createElement('strong')
     const span = document.createElement('span')
     strong.appendChild(document.createTextNode(msg.user))
@@ -51,9 +51,9 @@ export default class ChatUi implements IChatUi {
   /**
    * Add a bold message to the chat area.
    *
-   * @param {IChatMessage} msg Chat message
+   * @param msg Chat message
    */
-  public appendBoldText (msg: IChatMessage): void {
+  appendBoldText (msg: ChatMessage): void {
     const strong = document.createElement('strong')
     strong.appendChild(document.createTextNode(msg.content))
     this.appendMessage([strong])
@@ -61,9 +61,9 @@ export default class ChatUi implements IChatUi {
 
   /**
    *
-   * @param {IChatMessage} msg Chat message
+   * @param msg Chat message
    */
-  public appendImage (msg: IChatMessage): void {
+  appendImage (msg: ChatMessage): void {
     const strong = document.createElement('strong')
     const span = document.createElement('span')
     const img = document.createElement('img')
@@ -77,9 +77,9 @@ export default class ChatUi implements IChatUi {
   /**
    * Refresh logged on user list.
    *
-   * @param {IUser[]} users List of online users
+   * @param users List of online users
    */
-  public refreshUserList (users: IUser[]): void {
+  refreshUserList (users: User[]): void {
     const userList = document.getElementById('userList')
     userList.innerHTML = ''
     users.forEach(user => {
@@ -100,7 +100,7 @@ export default class ChatUi implements IChatUi {
   /**
    * Append an item to the messages collection.
    *
-   * @param {HTMLElement[]} elements html elements.
+   * @param elements HTML elements
    */
   private appendMessage (elements: HTMLElement[]): void {
     let li = document.createElement('li')

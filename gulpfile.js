@@ -28,7 +28,7 @@ gulp.task('lint', () => {
 gulp.task('copy', () => {
   gulp.src(config.pub.source)
     .pipe(gulp.dest(config.pub.destination))
-  gulp.src(config.views.source)
+  return gulp.src(config.views.source)
     .pipe(gulp.dest(config.views.destination))
 })
 
@@ -38,4 +38,6 @@ gulp.task('build', () => {
     .pipe(gulp.dest(config.ts.destination))
 })
 
-gulp.task('default', ['lint', 'build', 'copy'])
+gulp.task('default', gulp.series(['lint', 'build', 'copy'], done => {
+  done()
+}))

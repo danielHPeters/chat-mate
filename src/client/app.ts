@@ -1,8 +1,10 @@
 import ChatClient from './ChatClient'
-import ChatUi from './ChatUi'
+import WebUi from './WebUi'
 
-$('.dropify')['dropify']()
+document.addEventListener('DOMContentLoaded', event => {
+  $('.dropify')['dropify']()
 
-const ui = new ChatUi('messages')
-const client = new ChatClient(ui)
-client.init()
+  const ui = new WebUi('messages')
+  const client = new ChatClient(ui)
+  client.init()
+})
