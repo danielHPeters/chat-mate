@@ -38,6 +38,4 @@ gulp.task('build', () => {
     .pipe(gulp.dest(config.ts.destination))
 })
 
-gulp.task('default', gulp.series(['lint', 'build', 'copy'], done => {
-  done()
-}))
+gulp.task('default', gulp.series('lint', 'build', 'copy'))
