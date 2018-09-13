@@ -122,3 +122,8 @@ fabric.properties
 .idea/php.xml
 
 dist/
+
+public/**/*.map
+public/**/*.css
+public/**/*.js
+
