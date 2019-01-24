@@ -1,6 +1,7 @@
 import * as validator from 'validator'
 import ChatUser from '../../model/ChatUser'
 import { SocketEvents } from '../../enum/SocketEvents'
+import { Server, Socket } from 'socket.io'
 
 /**
  * ChatServer class
@@ -9,7 +10,7 @@ import { SocketEvents } from '../../enum/SocketEvents'
  * @version 1.0
  */
 export default class ChatServer {
-  private io: SocketIO.Server
+  private io: Server
   private users
 
   /**
@@ -17,7 +18,7 @@ export default class ChatServer {
    *
    * @param io
    */
-  constructor (io: SocketIO.Server) {
+  constructor (io: Server) {
     this.io = io
     this.users = []
   }
@@ -39,7 +40,7 @@ export default class ChatServer {
    *
    * @param socket
    */
-  private addUser (socket: SocketIO.Socket): void {
+  private addUser (socket: Socket): void {
     socket.on(SocketEvents.NEW_USER, user => {
       if (user !== '' && user !== null) {
         socket.emit(SocketEvents.WELCOME, { user, content: 'Welcome to ChatMate ' + user })
@@ -59,7 +60,7 @@ export default class ChatServer {
    *
    * @param socket
    */
-  private sendMessages (socket: SocketIO.Socket): void {
+  private sendMessages (socket: Socket): void {
     socket.on(SocketEvents.MESSAGE, msg => {
       msg = validator.escape(msg)
       if (msg !== '') {
@@ -76,7 +77,7 @@ export default class ChatServer {
    *
    * @param socket
    */
-  private sendImages (socket: SocketIO.Socket): void {
+  private sendImages (socket: Socket): void {
     socket.on(SocketEvents.IMAGE, data => this.io.emit(SocketEvents.IMAGE, {
       user: socket['username'],
       content: data.img
@@ -88,7 +89,7 @@ export default class ChatServer {
    *
    * @param socket
    */
-  private removeUser (socket: SocketIO.Socket): void {
+  private removeUser (socket: Socket): void {
     socket.on(SocketEvents.DISCONNECT, () => {
       if (socket['username']) {
         socket.broadcast.emit(SocketEvents.USER_DISCONNECT, { user: socket['username'], content: ' left the chat.' })

@@ -22,7 +22,7 @@ const config = {
 gulp.task('lint', () => {
   return gulp.src(config.ts.source)
     .pipe(tsLint({}))
-    .pipe(tsLint.report({summarizeFailureOutput: true}))
+    .pipe(tsLint.report({ summarizeFailureOutput: true }))
 })
 
 gulp.task('copy', () => {

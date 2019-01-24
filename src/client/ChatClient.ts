@@ -55,8 +55,10 @@ export default class ChatClient {
    */
   private registerFormEvents (socket: SocketIOClient.Socket): void {
     const form = document.getElementById('chatForm') as HTMLFormElement
+    const messageInput = document.getElementById('newMessage') as HTMLInputElement
+
     form.addEventListener('submit', event => {
-      const message = (document.getElementById('newMessage') as HTMLInputElement).value
+      const message = messageInput.value
       socket.emit(SocketEvents.MESSAGE, message)
       form.reset()
       event.preventDefault()
@@ -66,7 +68,8 @@ export default class ChatClient {
     document.getElementById('imageSubmit').addEventListener('change', e => {
       const file = (document.getElementById('image') as HTMLInputElement).files[0]
       const reader = new FileReader()
-      reader.addEventListener('load', evt => socket.emit(SocketEvents.IMAGE, { img: reader.result }))
+
+      reader.addEventListener('load', () => socket.emit(SocketEvents.IMAGE, { img: reader.result }))
       reader.readAsDataURL(file)
       e.preventDefault()
     })
