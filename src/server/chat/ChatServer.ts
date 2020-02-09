@@ -1,4 +1,4 @@
-import * as validator from 'validator'
+import validator from 'validator'
 import ChatUser from '../../model/ChatUser'
 import { SocketEvents } from '../../enum/SocketEvents'
 import { Server, Socket } from 'socket.io'
