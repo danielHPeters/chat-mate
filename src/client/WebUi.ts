@@ -56,6 +56,7 @@ export default class WebUi implements Ui {
   appendBoldText (msg: ChatMessage): void {
     const strong = document.createElement('strong')
     strong.appendChild(document.createTextNode(msg.content))
+
     this.appendMessage([strong])
   }
 
@@ -67,6 +68,7 @@ export default class WebUi implements Ui {
     const strong = document.createElement('strong')
     const span = document.createElement('span')
     const img = document.createElement('img')
+
     img.classList.add('responsive-img')
     img.src = msg.content
     strong.appendChild(document.createTextNode(msg.user))
@@ -81,6 +83,7 @@ export default class WebUi implements Ui {
    */
   refreshUserList (users: User[]): void {
     const userList = document.getElementById('userList')
+
     userList.innerHTML = ''
     users.forEach(user => {
       const chip = document.createElement('div')
@@ -103,10 +106,11 @@ export default class WebUi implements Ui {
    * @param elements HTML elements
    */
   private appendMessage (elements: HTMLElement[]): void {
-    let li = document.createElement('li')
-    li.classList.add('collection-item')
-    elements.forEach(element => li.appendChild(element))
-    this.element.appendChild(li)
+    const messageListItem = document.createElement('li')
+
+    messageListItem.classList.add('collection-item')
+    elements.forEach(element => messageListItem.appendChild(element))
+    this.element.appendChild(messageListItem)
     this.scrollDown()
   }
 }

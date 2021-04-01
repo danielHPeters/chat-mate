@@ -63,10 +63,12 @@ export default class ChatServer {
   private sendMessages (socket: Socket): void {
     socket.on(SocketEvents.MESSAGE, msg => {
       msg = validator.escape(msg)
+
       if (msg !== '') {
         if (msg.length > 100) {
           msg = msg.substring(0, 120)
         }
+
         this.io.emit(SocketEvents.MESSAGE, { user: socket['username'], content: ': ' + msg })
       }
     })

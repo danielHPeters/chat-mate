@@ -1,7 +1,6 @@
 'use strict'
 
 const gulp = require('gulp')
-const tsLint = require('gulp-tslint')
 const ts = require('gulp-typescript')
 const tsProject = ts.createProject('tsconfig.json')
 const config = {
@@ -19,11 +18,11 @@ const config = {
   }
 }
 
-gulp.task('lint', () => {
+/*gulp.task('lint', () => {
   return gulp.src(config.ts.source)
     .pipe(tsLint({}))
     .pipe(tsLint.report({ summarizeFailureOutput: true }))
-})
+}*/
 
 gulp.task('copy', () => {
   gulp.src(config.pub.source)
@@ -38,4 +37,4 @@ gulp.task('build', () => {
     .pipe(gulp.dest(config.ts.destination))
 })
 
-gulp.task('default', gulp.series('lint', 'build', 'copy'))
+gulp.task('default', gulp.series('build', 'copy'))
