@@ -14,7 +14,7 @@
     "jquery": "^3.6.0",
     "morgan": "^1.10.0",
     "pug": "^3.0.2",
-    "socket.io": "^4.0.1",
+    "socket.io": "^4.5.3",
     "ts-loader": "^8.1.0",
     "validator": "^13.5.2"
   },
